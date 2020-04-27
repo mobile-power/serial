@@ -2,8 +2,18 @@
 
 package serial
 
+/*
+	#include <termios.h>
+	int drain_fd(int fd) {
+		return tcdrain(fd);
+	}
+*/
+import "C"
+
 import (
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"time"
 	"unsafe"
@@ -157,6 +167,15 @@ func (p *Port) Flush() error {
 		return nil
 	}
 	return errno
+}
+
+func (p *Port) Drain() error {
+	log.Println("drain")
+	if C.drain_fd(C.int(p.f.Fd())) == 0 {
+		return nil
+	} else {
+		return errors.New("tcdrain failed!")
+	}
 }
 
 func (p *Port) Close() (err error) {
