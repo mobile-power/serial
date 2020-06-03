@@ -2,8 +2,21 @@
 
 package serial
 
-/*
+/*	#include <sys/ioctl.h>
 	#include <termios.h>
+	#include <unistd.h>
+
+	int outputDataRemaining(int fd) {
+		int nBytes = -1;
+		return ioctl(fd, TIOCOUTQ, &nBytes);
+	}
+
+	int waitForOutput(int fd) {
+		while (outputDataRemaining(fd) > 0 ) {
+			usleep(1);
+		}
+	}
+
 	int drain_fd(int fd) {
 		return tcdrain(fd);
 	}
@@ -177,6 +190,15 @@ func (p *Port) Drain() error {
 		return errors.New("tcdrain failed!")
 	}
 }
+
+func (p *Port) OutputBytesRemaining() int {
+	return int(C.outputDataRemaining(C.int(p.f.Fd())))
+}
+
+func (p *Port) WaitUntilNoOutputRemaining() {
+	C.waitForOutput(C.int(p.f.Fd()))
+}
+
 
 func (p *Port) Close() (err error) {
 	return p.f.Close()
