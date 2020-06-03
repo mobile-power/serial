@@ -5,15 +5,18 @@ package serial
 /*	#include <sys/ioctl.h>
 	#include <termios.h>
 	#include <unistd.h>
+	#include <stdio.h>
 
 	int outputDataRemaining(int fd) {
 		int nBytes = -1;
 		ioctl(fd, TIOCOUTQ, &nBytes);
+		printf("%d\n", nBytes);
 		return nBytes;
 	}
 
 	int waitForOutput(int fd) {
 		while (outputDataRemaining(fd) > 0 ) {
+			printf("waiting...\n");
 			usleep(1);
 		}
 	}
