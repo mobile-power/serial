@@ -8,7 +8,8 @@ package serial
 
 	int outputDataRemaining(int fd) {
 		int nBytes = -1;
-		return ioctl(fd, TIOCOUTQ, &nBytes);
+		ioctl(fd, TIOCOUTQ, &nBytes);
+		return nBytes;
 	}
 
 	int waitForOutput(int fd) {
